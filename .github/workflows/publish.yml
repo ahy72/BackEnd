@@ -28,7 +28,9 @@ jobs:
       run: dotnet restore
     - name: Build with dotnet
       run: dotnet build --configuration Release --no-restore
-    - name: Test
-      run: dotnet test --no-restore --verbosity normal
     - name: Publish
       run: dotnet publish BackEnd.csproj --configuration Release --framework netcoreapp3.1 --output ./publish --runtime win-x86  --self-contained true -p:PublishTrimmed=true -p:PublishSingleFile=true
+    - uses: actions/upload-artifact@v1
+      with:
+        name: Backend
+        path: publish
