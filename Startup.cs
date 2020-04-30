@@ -32,7 +32,7 @@ namespace BackEnd
                 options.AddPolicy(name: CorsPolicyName,
                     builder =>
                     {
-                        builder.WithOrigins("http://127.0.0.1:8081").WithMethods("GET");
+                        builder.WithOrigins("http://127.0.0.1:8081","https://virtualmachinestatus.azurewebsites.net/").WithMethods("GET");
                     });
             });
 
