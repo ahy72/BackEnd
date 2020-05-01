@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BackEnd.Models;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace BackEnd.Controllers
@@ -12,28 +14,18 @@ namespace BackEnd.Controllers
     [Route("[controller]")]
     public class VirtualMachineStatusController : ControllerBase
     {
-        private readonly ILogger<VirtualMachineStatusController> _logger;
+        private readonly VirtualMachineContext _context;
 
-        public VirtualMachineStatusController(ILogger<VirtualMachineStatusController> logger)
+        public VirtualMachineStatusController(VirtualMachineContext context)
         {
-            _logger = logger;
+            _context = context;
         }
 
         [HttpGet]
         [EnableCors(Startup.CorsPolicyName)]
-        public IEnumerable<VirtualMachine> Get()
+        public async Task<VirtualMachine[]> Get()
         {
-            yield return new VirtualMachine(1, "ERP", 20000)
-            {
-                ConnectedMachine = "172.16.0.0",
-                Operation = OperationStatus.Work
-            };
-
-            yield return new VirtualMachine(2, "8.1", 20001)
-            {
-                ConnectedMachine = "172.16.0.1",
-                Operation = OperationStatus.Stop
-            };
+            return await _context.VirtualMachines.ToArrayAsync();
         }
     }
 }
