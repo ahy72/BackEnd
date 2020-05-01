@@ -37,48 +37,34 @@ namespace BackEnd.Models
         /// 稼働状況を表す文字列を取得します。
         /// </summary>
         [NotMapped]
-        public string OperationStr
-        {
-            get { return Operation == OperationStatus.Work ? "稼働" : "停止"; }
-        }
+        public string OperationStr => Operation == OperationStatus.Work ? "稼働" : "停止";
         /// <summary>
         /// 接続しているマシンを表す文字列を取得します。
         /// </summary>
         [NotMapped]
-        public string ConnectedMachineStr
+        public string ConnectedMachineStr => String.IsNullOrEmpty(ConnectedMachine) ? "接続なし" : ConnectedMachine;
+
+        /// <summary>
+        /// 仮想マシンの新しいインスタンスを初期化します。
+        /// </summary>
+        public VirtualMachine()
         {
-            get { return String.IsNullOrEmpty(ConnectedMachine) ? "接続なし" : ConnectedMachine; }
         }
 
         /// <summary>
         /// 仮想マシンの新しいインスタンスを初期化します。
         /// </summary>
-        /// <param name="id">ID</param>
-        /// <param name="name">仮想マシン名</param>
-        /// <param name="port">ポート番号</param>
-        public VirtualMachine(int id, string name, int port)
+        /// <param name="org">元になるエンティティ</param>
+        public VirtualMachine(VirtualMachine org)
         {
-            Id = id;
-            Name = name;
-            Port = port;
-            Operation = OperationStatus.Stop;
+            Id = org.Id;
+            Name = org.Name;
+            Port = org.Port;
+            Operation = org.Operation;
+            ConnectedMachine = org.ConnectedMachine;
         }
 
-        /// <summary>
-        /// 仮想マシン状態を表す文字列を取得します。
-        /// </summary>
-        /// <returns>仮想マシン状態を表す文字列</returns>
-        public string ToStatusString()
-        {
-            var items = new string[]
-            {
-                Id.ToString(),
-                ((int)(Operation)).ToString(),
-                ConnectedMachine
-            };
-
-            return String.Join("\t", items);
-        }
+        public VirtualMachine Clone() => new VirtualMachine(this);
     }
 
     /// <summary>
