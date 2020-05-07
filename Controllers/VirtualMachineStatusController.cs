@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BackEnd.Models;
 using Microsoft.AspNetCore.Cors;
+using System.Diagnostics;
 
 namespace BackEnd.Controllers
 {
@@ -47,12 +48,16 @@ namespace BackEnd.Controllers
 		[EnableCors(Startup.CorsPolicyName)]
 		public async Task<ActionResult<IEnumerable<VirtualMachine>>> RefreshVirtualMachines()
 		{
+			Trace.TraceError("### RefreshVirtualMachines Start");
+
 			foreach (var machine in await _context.GetNewVirtualMachines())
 			{
 				_context.Entry(machine).State = EntityState.Modified;
 			}
 
 			await _context.SaveChangesAsync();
+
+			Trace.TraceError("### RefreshVirtualMachines End");
 
 			return new ActionResult<IEnumerable<VirtualMachine>>(await _context.VirtualMachines.ToListAsync());
 		}
