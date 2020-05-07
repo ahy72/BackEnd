@@ -50,12 +50,12 @@ namespace BackEnd.Controllers
 		{
 			Trace.TraceError("### RefreshVirtualMachines Start");
 
-			foreach (var machine in await _context.GetNewVirtualMachines())
-			{
-				_context.Entry(machine).State = EntityState.Modified;
-			}
+			// foreach (var machine in await _context.GetNewVirtualMachines())
+			// {
+			// 	_context.Entry(machine).State = EntityState.Modified;
+			// }
 
-			await _context.SaveChangesAsync();
+			// await _context.SaveChangesAsync();
 
 			Trace.TraceError("### RefreshVirtualMachines End");
 
@@ -66,12 +66,14 @@ namespace BackEnd.Controllers
 		[EnableCors(Startup.CorsPolicyName)]
 		public async Task<ActionResult<IEnumerable<VirtualMachine>>> ResetVirtualMachines()
 		{
+			Trace.TraceError("### ResetVirtualMachines Start");
 			foreach (var machine in _context.VirtualMachines)
 			{
 				machine.Operation = OperationStatus.Work;
 				machine.ConnectedMachine = $"con-{machine.Name}";
 				_context.Entry(machine).State = EntityState.Modified;
 			}
+			Trace.TraceError("### ResetVirtualMachines End");
 
 			await _context.SaveChangesAsync();
 
