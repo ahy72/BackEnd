@@ -21,7 +21,7 @@ namespace BackEnd.Models
 
         public async Task<IEnumerable<VirtualMachine>> GetNewVirtualMachines()
         {
-            var machines = await VirtualMachines.Select(target => target.Clone()).ToListAsync();
+            var machines = await VirtualMachines.ToListAsync();
             var connections = GetConnectionStatus()?.ToDictionary(target => target.Port);
             if (connections == null)
             {
@@ -57,7 +57,7 @@ namespace BackEnd.Models
 
             var connections = new Dictionary<int, ConnectionStatus>();
             // 以下のような行が含まれていれば、稼働状態と判断
-            // "TCP         [::]:13393             SysTrialSvr:0                 LISTENING"
+            // "TCP         [::]:13393             servername:0                 LISTENING"
             foreach (var line in commandOutputLines)
             {
                 if (line.Contains("TCP") == false || line.Contains("LISTENING") == false)
@@ -88,7 +88,7 @@ namespace BackEnd.Models
             }
 
             // 以下のような行が含まれていれば、接続ありと判断
-            // "TCP         172.16.2.196:13389     oono-y-pc:3651         ESTABLISHED"
+            // "TCP         172.16.2.196:13389     clientname:3651         ESTABLISHED"
             foreach (var line in commandOutputLines)
             {
                 if (line.Contains("TCP") == false || line.Contains("ESTABLISHED") == false)
