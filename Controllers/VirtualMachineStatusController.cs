@@ -44,7 +44,7 @@ namespace BackEnd.Controllers
 			return virtualMachine;
 		}
 
-		[HttpGet("Refresh")]
+		[HttpPost("Refresh")]
 		[EnableCors(Startup.CorsPolicyName)]
 		public async Task<ActionResult<IEnumerable<VirtualMachine>>> RefreshVirtualMachines()
 		{
@@ -53,9 +53,33 @@ namespace BackEnd.Controllers
 				_context.Entry(machine).State = EntityState.Modified;
 			}
 
+			var refreshTime = await GetRefreshTimeEntity();
+			refreshTime.Time = DateTime.Now;
+			_context.Entry(refreshTime).State = EntityState.Modified;
+
 			await _context.SaveChangesAsync();
 
 			return new ActionResult<IEnumerable<VirtualMachine>>(await _context.VirtualMachines.ToListAsync());
+		}
+
+		[HttpGet("RefreshTime")]
+		[EnableCors(Startup.CorsPolicyName)]
+		public async Task<ActionResult<DateTime>> GetRefreshTime()
+		{
+			return new ActionResult<DateTime>((await GetRefreshTimeEntity()).Time);
+		}
+
+		private async Task<RefreshTime> GetRefreshTimeEntity()
+		{
+			var refreshTime = await _context.RefreshTime.FirstOrDefaultAsync();
+			if (refreshTime == null)
+			{
+				await _context.RefreshTime.AddAsync(new RefreshTime() { Time = DateTime.MinValue });
+				await _context.SaveChangesAsync();
+				refreshTime = await _context.RefreshTime.FirstAsync();
+			}
+
+			return refreshTime;
 		}
 
 		[HttpGet("Reset")]

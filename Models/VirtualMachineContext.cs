@@ -13,6 +13,7 @@ namespace BackEnd.Models
 	public class VirtualMachineContext : DbContext
 	{
 		public DbSet<VirtualMachine> VirtualMachines { get; set; }
+		public DbSet<RefreshTime> RefreshTime { get; set; }
 
 		public VirtualMachineContext(DbContextOptions<VirtualMachineContext> options)
 			: base(options)
