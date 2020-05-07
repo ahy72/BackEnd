@@ -23,10 +23,6 @@ namespace BackEnd.Models
 		{
 			var machines = await VirtualMachines.ToListAsync();
 			var connections = GetConnectionStatus()?.ToDictionary(target => target.Port) ?? new Dictionary<int, ConnectionStatus>();
-			if (connections == null)
-			{
-				return null;
-			}
 
 			foreach (var machine in machines)
 			{
@@ -145,7 +141,7 @@ namespace BackEnd.Models
 		{
             // TODO 仮修正
             return null;
-            
+
 			var result = new List<string>();
 			var lockObject = new object();
 
