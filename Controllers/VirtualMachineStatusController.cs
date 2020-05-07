@@ -11,7 +11,7 @@ using System.Diagnostics;
 
 namespace BackEnd.Controllers
 {
-	[Route("api/[controller]")]
+	[Route("[controller]")]
 	[ApiController]
 	public class VirtualMachineStatusController : ControllerBase
 	{

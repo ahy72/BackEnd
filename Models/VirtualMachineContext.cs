@@ -140,9 +140,6 @@ namespace BackEnd.Models
 		/// <returns>結果の文字列 失敗した場合、null</returns>
 		private static List<string> GetCommandOutputLines(string commandName, string arguments)
 		{
-            // TODO 仮修正
-            return null;
-
 			var result = new List<string>();
 			var lockObject = new object();
 
