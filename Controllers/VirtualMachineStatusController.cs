@@ -30,20 +30,6 @@ namespace BackEnd.Controllers
 			return await _context.VirtualMachines.ToListAsync();
 		}
 
-		// GET: api/VirtualMachineStatus/5
-		[HttpGet("{id}")]
-		public async Task<ActionResult<VirtualMachine>> GetVirtualMachine(int id)
-		{
-			var virtualMachine = await _context.VirtualMachines.FindAsync(id);
-
-			if (virtualMachine == null)
-			{
-				return NotFound();
-			}
-
-			return virtualMachine;
-		}
-
 		[HttpPost("Refresh")]
 		[EnableCors(Startup.CorsPolicyName)]
 		public async Task<ActionResult<IEnumerable<VirtualMachine>>> RefreshVirtualMachines()
@@ -98,69 +84,54 @@ namespace BackEnd.Controllers
 			return new ActionResult<IEnumerable<VirtualMachine>>(await _context.VirtualMachines.ToListAsync());
 		}
 
-		// PUT: api/VirtualMachineStatus/5
-		// To protect from overposting attacks, enable the specific properties you want to bind to, for
-		// more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
-		[HttpPut("{id}")]
-		public async Task<IActionResult> PutVirtualMachine(int id, VirtualMachine virtualMachine)
+		[HttpGet("Message")]
+		[EnableCors(Startup.CorsPolicyName)]
+		public async Task<ActionResult<string>> GetMessage()
 		{
-			if (id != virtualMachine.Id)
-			{
-				return BadRequest();
-			}
-
-			_context.Entry(virtualMachine).State = EntityState.Modified;
-
-			try
-			{
-				await _context.SaveChangesAsync();
-			}
-			catch (DbUpdateConcurrencyException)
-			{
-				if (!VirtualMachineExists(id))
-				{
-					return NotFound();
-				}
-				else
-				{
-					throw;
-				}
-			}
-
-			return NoContent();
+			return new ActionResult<string>((await _context.Message.FirstOrDefaultAsync())?.Text ?? string.Empty);
 		}
 
-		// POST: api/VirtualMachineStatus
-		// To protect from overposting attacks, enable the specific properties you want to bind to, for
-		// more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
-		[HttpPost]
-		public async Task<ActionResult<VirtualMachine>> PostVirtualMachine(VirtualMachine virtualMachine)
+		[HttpPost("Message")]
+		[EnableCors(Startup.CorsPolicyName)]
+		public async Task<ActionResult<string>> PostMessageFromBody([FromBody] string message)
 		{
-			_context.VirtualMachines.Add(virtualMachine);
+			return await PostMessage(message);
+		}
+
+		[HttpPost("Message/{message}")]
+		[EnableCors(Startup.CorsPolicyName)]
+		public async Task<ActionResult<string>> PostMessage(string message)
+		{
+			var entity = await _context.Message.FirstOrDefaultAsync();
+			if (entity == null)
+			{
+				await _context.Message.AddAsync(new Message() { Text = message });
+			}
+			else
+			{
+				entity.Text = message;
+				_context.Entry(entity).State = EntityState.Modified;
+			}
+
 			await _context.SaveChangesAsync();
+			entity = await _context.Message.FirstAsync();
 
-			return CreatedAtAction("GetVirtualMachine", new { id = virtualMachine.Id }, virtualMachine);
+			return new ActionResult<string>(entity.Text);
 		}
 
-		// DELETE: api/VirtualMachineStatus/5
-		[HttpDelete("{id}")]
-		public async Task<ActionResult<VirtualMachine>> DeleteVirtualMachine(int id)
+		[HttpDelete("Message")]
+		public async Task<ActionResult> DeleteMessage()
 		{
-			var virtualMachine = await _context.VirtualMachines.FindAsync(id);
-			if (virtualMachine == null)
+			var entity = await _context.Message.FirstOrDefaultAsync();
+			if (entity == null)
 			{
 				return NotFound();
 			}
 
-			_context.VirtualMachines.Remove(virtualMachine);
+			_context.Message.Remove(entity);
 			await _context.SaveChangesAsync();
 
-			return virtualMachine;
-		}
-
-		private bool VirtualMachineExists(int id)
-		{
-			return _context.VirtualMachines.Any(e => e.Id == id);
+			return NoContent();
 		}
 	}
 }
