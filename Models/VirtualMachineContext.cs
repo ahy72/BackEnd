@@ -28,14 +28,16 @@ namespace BackEnd.Models
 
 			foreach (var machine in machines)
 			{
-				if (connections.TryGetValue(machine.Port, out ConnectionStatus connection) == false)
+				if (connections.TryGetValue(machine.Port, out ConnectionStatus connection) == true)
+				{
+					machine.Operation = OperationStatus.Work;
+					machine.ConnectedMachine = connection.ConnectedMachine;
+				}
+				else
 				{
 					machine.Operation = OperationStatus.Stop;
 					machine.ConnectedMachine = null;
-					continue;
 				}
-
-				machine.ConnectedMachine = connection.ConnectedMachine;
 			}
 
 			return machines;
