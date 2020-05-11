@@ -39,6 +39,7 @@ namespace BackEnd
 					{
 						builder.WithOrigins(
 							"http://127.0.0.1:8081", 
+							"http://systrialsvr",
 							"https://virtualmachinestatus.azurewebsites.net").
 							WithHeaders("Content-Type").
 							WithMethods("GET", "POST", "DELETE");
